@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="rollButton">Roll!</string>
+	<string name="rollResult"></string>
+	<string name="app_name">Rollify</string>
+	<string name="formulaNameTextField">Formula Name</string>
+	<string name="addFormulaButton">+f</string>
+
+	<string-array name="formulaListItemMenu" >
+		<item>Use</item>
+		<item>Edit</item>
+		<item>Delete</item>
+	</string-array>
+</resources>

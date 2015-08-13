@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RollifyAndroid", "RollifyAndroid\RollifyAndroid.csproj", "{31193F01-1F91-4F5A-8A80-00011D4F8670}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RollifyAndroid.UITests", "RollifyAndroid.UITests\RollifyAndroid.UITests.csproj", "{D7440CEB-B0BD-4808-8149-FD1F998A2475}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rollify.Core", "Rollify.Core\Rollify.Core.csproj", "{281D3965-AD73-426C-AFC5-C3E49723B27C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{281D3965-AD73-426C-AFC5-C3E49723B27C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281D3965-AD73-426C-AFC5-C3E49723B27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281D3965-AD73-426C-AFC5-C3E49723B27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281D3965-AD73-426C-AFC5-C3E49723B27C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31193F01-1F91-4F5A-8A80-00011D4F8670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31193F01-1F91-4F5A-8A80-00011D4F8670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31193F01-1F91-4F5A-8A80-00011D4F8670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31193F01-1F91-4F5A-8A80-00011D4F8670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7440CEB-B0BD-4808-8149-FD1F998A2475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7440CEB-B0BD-4808-8149-FD1F998A2475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7440CEB-B0BD-4808-8149-FD1F998A2475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7440CEB-B0BD-4808-8149-FD1F998A2475}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
