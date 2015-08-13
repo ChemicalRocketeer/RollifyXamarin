@@ -51,7 +51,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FormulaAdapter.cs" />
-    <Compile Include="FormulaDatabase.cs" />
     <Compile Include="SQLite.Implementation.cs" />
   </ItemGroup>
   <ItemGroup>
