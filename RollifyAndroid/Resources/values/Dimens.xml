@@ -4,4 +4,5 @@
 	<dimen name="calculatorTextSize">22sp</dimen>
 	<dimen name="calculatorOperatorTextSize">32sp</dimen>
 	<dimen name="calculatorSpaceSize">1dp</dimen>
+	<dimen name="calculatorButtonElevation">4dp</dimen>
 </resources>

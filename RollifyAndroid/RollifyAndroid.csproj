@@ -15,7 +15,7 @@
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
     <AssemblyName>RollifyAndroid</AssemblyName>
-    <TargetFrameworkVersion>v4.4</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v5.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,9 +49,9 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="FormulaAdapter.cs" />
     <Compile Include="SQLite.Implementation.cs" />
+    <Compile Include="ExtensionsAndroid.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -66,7 +66,17 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\Icon.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\Icon.png" />
     <AndroidResource Include="Resources\layout\Main.axml" />
-    <AndroidResource Include="Resources\values\dimens.xml" />
+    <AndroidResource Include="Resources\values\Styles.xml" />
+    <AndroidResource Include="Resources\values\Color.xml" />
+    <AndroidResource Include="Resources\drawable\calc_toolbar_button.xml" />
+    <AndroidResource Include="Resources\drawable\operator_button.xml" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_backspace_white_24dp.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_backspace_white_24dp.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_backspace_white_24dp.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_backspace_white_24dp.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_backspace_white_24dp.png" />
+    <AndroidResource Include="Resources\layout\CalculatorGrid.axml" />
+    <AndroidResource Include="Resources\values\Dimens.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
@@ -74,5 +84,8 @@
       <Project>{281D3965-AD73-426C-AFC5-C3E49723B27C}</Project>
       <Name>Rollify.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\drawable\" />
   </ItemGroup>
 </Project>
