@@ -70,7 +70,7 @@
                 android:id="@+id/space5" />
             <ImageButton
                 android:id="@+id/backspaceImageButton"
-                android:src="@android:drawable/sym_keyboard_delete"
+                android:src="@android:drawable/ic_input_delete"
                 android:background="@null"
                 android:layout_gravity="right"
                 android:layout_width="wrap_content"
