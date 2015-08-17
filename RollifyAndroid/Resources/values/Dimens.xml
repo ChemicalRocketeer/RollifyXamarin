@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<resources>
+	<dimen name="calculatorTextSize">22sp</dimen>
+	<dimen name="calculatorOperatorTextSize">32sp</dimen>
+	<dimen name="calculatorSpaceSize">1dp</dimen>
+</resources>
