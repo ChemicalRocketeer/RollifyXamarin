@@ -65,6 +65,8 @@ namespace Rollify.Core
 			{ "/", new Operator() { Precedence = 2f, Operate = delegate(Stack<long> stack) 
 					{
 						long b = stack.Pop();
+						if (b == 0)
+							throw new InvalidExpressionException("Division by zero");
 						long a = stack.Pop();
 						stack.Push (a / b); 
 					} 
