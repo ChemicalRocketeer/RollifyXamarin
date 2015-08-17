@@ -8,58 +8,192 @@
         android:layout_height="wrap_content"
         android:id="@+id/rollFormulaEditText"
         android:textAlignment="center" />
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout1">
-        <Button
-            android:text="@string/rollButton"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/topButtonBarHeight"
-            android:id="@+id/rollButton"
-            android:layout_weight="1" />
-        <Button
-            android:text="@string/addFormulaButton"
-            android:layout_width="@dimen/topButtonBarHeight"
-            android:layout_height="@dimen/topButtonBarHeight"
-            android:id="@+id/addFormulaButton" />
-    </LinearLayout>
     <TextView
-        android:text="@string/rollResult"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/rollResult"
+        android:text="24"
+        android:textSize="28sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rollResult" />
+        android:paddingBottom="5dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp" />
     <LinearLayout
         android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout2"
-        android:layout_weight="2">
-        <ListView
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/linearLayout1">
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space1" />
+            <Button
+                android:id="@+id/swapCalcModeButton"
+                style="@style/CalcTextButton.Horizontal"
+                android:text="MR"
+                android:background="@null" />
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space2" />
+            <Button
+                android:id="@+id/addFormulaButton"
+                android:text="M+"
+                style="@style/CalcTextButton.Horizontal"
+                android:background="@null" />
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space3" />
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space4" />
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space5" />
+            <ImageButton
+                android:id="@+id/backspaceImageButton"
+                android:src="@android:drawable/ic_input_delete"
+                android:background="@null"
+                android:layout_gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space6" />
+            <Button
+                android:text="Button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/button1"
+                android:elevation="@dimen/calculatorButtonElevation"
+                android:translationZ="0dp" />
+            <ImageButton
+                android:src="@android:drawable/ic_input_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:elevation="2dp"
+                android:id="@+id/imageButton1"
+                android:translationZ="0dp" />
+        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/calculatorSpaceSize"
+            android:id="@+id/space7" />
+        <LinearLayout
+            android:orientation="horizontal"
             android:minWidth="25px"
             android:minHeight="25px"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/formulaListView" />
+            android:layout_height="0dp"
+            android:layout_weight="8"
+            android:id="@+id/linearLayout4">
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space8" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:minWidth="25px"
+                android:minHeight="25px"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:id="@+id/linearLayout2"
+                android:verticalScrollbarPosition="left">
+                <ListView
+                    android:minWidth="25px"
+                    android:minHeight="25px"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:id="@+id/formulaListView"
+                    android:layout_weight="4" />
+            </LinearLayout>
+            <Space
+                android:layout_width="4dp"
+                android:layout_height="match_parent" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:minWidth="25px"
+                android:minHeight="25px"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/linearLayout3">
+                <Button
+                    android:text="+"
+                    android:id="@+id/calcAdd"
+                    style="@style/BigTextButton.Vertical"
+                    android:background="@color/operatorButton" />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/calculatorSpaceSize"
+                    android:id="@+id/space10" />
+                <Button
+                    android:text="−"
+                    android:id="@+id/calcSub"
+                    style="@style/BigTextButton.Vertical"
+                    android:background="@color/operatorButton" />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/calculatorSpaceSize"
+                    android:id="@+id/space11" />
+                <Button
+                    android:text="×"
+                    android:id="@+id/calcMul"
+                    style="@style/BigTextButton.Vertical"
+                    android:background="@color/operatorButton" />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/calculatorSpaceSize"
+                    android:id="@+id/space12" />
+                <Button
+                    android:text="÷"
+                    android:id="@+id/calcDiv"
+                    style="@style/BigTextButton.Vertical"
+                    android:background="@color/operatorButton" />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/calculatorSpaceSize"
+                    android:id="@+id/space13" />
+                <Button
+                    android:text="="
+                    android:id="@+id/rollButton"
+                    style="@style/BigTextButton.VerticalDouble"
+                    android:background="@color/emphasizedButton" />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/calculatorSpaceSize"
+                    android:id="@+id/space14" />
+            </LinearLayout>
+            <Space
+                android:layout_width="@dimen/calculatorSpaceSize"
+                android:layout_height="match_parent"
+                android:id="@+id/space15" />
+        </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:orientation="vertical"
+    <RelativeLayout
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout3"
-        android:layout_weight="1">
+        android:layout_height="0dp"
+        android:layout_gravity="bottom">
         <ScrollView
             android:minWidth="25px"
             android:minHeight="25px"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/scrollView1">
+            android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/debugTextView"
                 android:textColor="#ff30ee3e"
@@ -67,5 +201,5 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </ScrollView>
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

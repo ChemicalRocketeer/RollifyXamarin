@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+	<color name="calculatorButton">#404040</color>
+	<color name="calculatorButtonPressed">#707070</color>
+	<color name="operatorButton">#F73D0C</color>  <!-- 0A8AE5 -->
+	<color name="operatorButtonPressed">#FF8F72</color>  <!-- 88C3ED -->
+	<color name="toolbarButton">#06CF6E</color>
+	<color name="toolbarButtonPressed">#9DECC6</color>
+	<color name="emphasizedButton">#FF8006</color>
+	<color name="emphasizedButtonPressed">#FFD2A6</color>
+	<color name="uiControlButton">#00C656</color>
+	<color name="uiControlButtonPressed">#AEEECA</color>
+</resources>
