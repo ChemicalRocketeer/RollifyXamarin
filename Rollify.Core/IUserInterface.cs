@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Rollify.SQLite;
 
@@ -14,7 +15,7 @@ namespace Rollify.Core
 		bool RollingEnabled { get; set; }
 
 		Database<T> GetDatabase<T>(string path) where T : IDatabaseObject, new ();
-		void UpdateFormulaList();
+		void UpdateFormulaList(IEnumerable<Formula> formulas);
 		void InsertFormulaText(string text);
 		void DisplayRollResult(string result);
 		void DisplayRollError(string error);

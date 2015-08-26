@@ -52,7 +52,8 @@
     <Compile Include="FormulaAdapter.cs" />
     <Compile Include="SQLite.Implementation.cs" />
     <Compile Include="ExtensionsAndroid.cs" />
-    <Compile Include="CalculatorButtons.cs" />
+    <Compile Include="Fragments\CalcNumpadFragment.cs" />
+    <Compile Include="Fragments\FormulaListFragment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -76,17 +77,19 @@
     <AndroidResource Include="Resources\drawable-xhdpi\ic_backspace_white_24dp.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_backspace_white_24dp.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_backspace_white_24dp.png" />
-    <AndroidResource Include="Resources\layout\CalculatorGrid.axml" />
+    <AndroidResource Include="Resources\layout\CalcNumpad.axml" />
+    <AndroidResource Include="Resources\layout\FormulaList.axml" />
     <AndroidResource Include="Resources\values\Dimens.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Resources\drawable\" />
+    <Folder Include="Fragments\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rollify.Core\Rollify.Core.csproj">
       <Project>{281D3965-AD73-426C-AFC5-C3E49723B27C}</Project>
       <Name>Rollify.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\drawable\" />
   </ItemGroup>
 </Project>

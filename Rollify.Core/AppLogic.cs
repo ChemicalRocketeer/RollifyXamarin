@@ -39,7 +39,7 @@ namespace Rollify.Core
 				Uses = 0,
 			};
 			formulaDatabase.Save (f);
-			ui.UpdateFormulaList ();
+			ui.UpdateFormulaList (GetFormulasSorted());
 		}
 
 		public void UseFormula(Formula f) {
@@ -55,7 +55,7 @@ namespace Rollify.Core
 
 		public void DeleteFormula(Formula f) {
 			formulaDatabase.Delete (f.ID);
-			ui.UpdateFormulaList ();
+			ui.UpdateFormulaList (GetFormulasSorted());
 		}
 
 		public IEnumerable<Formula> GetFormulasSorted() {

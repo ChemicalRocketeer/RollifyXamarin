@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Android;
+using Android.App;
+using Android.Content;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Android.OS;
 
 using Rollify.Core;
 
@@ -12,9 +15,9 @@ namespace RollifyAndroid
 	public class FormulaAdapter : BaseAdapter<Formula>
 	{
 		public Formula[] formulas;
-		MainActivity context;
+		Activity context;
 
-		public FormulaAdapter (MainActivity context, Formula[] formulas)
+		public FormulaAdapter (Activity context, Formula[] formulas)
 		{
 			this.context = context;
 			this.formulas = formulas;
