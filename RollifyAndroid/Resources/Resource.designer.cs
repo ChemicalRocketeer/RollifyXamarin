@@ -153,26 +153,26 @@ namespace RollifyAndroid
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f090018
-			public const int addFormulaButton = 2131296280;
+			// aapt resource value: 0x7f09001d
+			public const int addFormulaButton = 2131296285;
 			
-			// aapt resource value: 0x7f09001c
-			public const int backspaceImageButton = 2131296284;
+			// aapt resource value: 0x7f090021
+			public const int backspaceImageButton = 2131296289;
 			
-			// aapt resource value: 0x7f09001e
-			public const int button1 = 2131296286;
+			// aapt resource value: 0x7f090023
+			public const int button1 = 2131296291;
 			
-			// aapt resource value: 0x7f090026
-			public const int calcAdd = 2131296294;
+			// aapt resource value: 0x7f09002b
+			public const int calcAdd = 2131296299;
 			
-			// aapt resource value: 0x7f09002c
-			public const int calcDiv = 2131296300;
+			// aapt resource value: 0x7f090031
+			public const int calcDiv = 2131296305;
 			
-			// aapt resource value: 0x7f09002a
-			public const int calcMul = 2131296298;
+			// aapt resource value: 0x7f09002f
+			public const int calcMul = 2131296303;
 			
-			// aapt resource value: 0x7f090028
-			public const int calcSub = 2131296296;
+			// aapt resource value: 0x7f09002d
+			public const int calcSub = 2131296301;
 			
 			// aapt resource value: 0x7f09000b
 			public const int calc_0 = 2131296267;
@@ -210,110 +210,125 @@ namespace RollifyAndroid
 			// aapt resource value: 0x7f09000c
 			public const int calc_open_paren = 2131296268;
 			
-			// aapt resource value: 0x7f090031
-			public const int content = 2131296305;
+			// aapt resource value: 0x7f090012
+			public const int cancelButton = 2131296274;
 			
-			// aapt resource value: 0x7f090035
-			public const int debugTextView = 2131296309;
+			// aapt resource value: 0x7f090036
+			public const int content = 2131296310;
 			
-			// aapt resource value: 0x7f090034
-			public const int formulaListContainer = 2131296308;
+			// aapt resource value: 0x7f09003a
+			public const int debugTextView = 2131296314;
 			
-			// aapt resource value: 0x7f09000e
-			public const int formulaListView = 2131296270;
+			// aapt resource value: 0x7f090010
+			public const int formulaExpression = 2131296272;
+			
+			// aapt resource value: 0x7f090039
+			public const int formulaListContainer = 2131296313;
+			
+			// aapt resource value: 0x7f090014
+			public const int formulaListView = 2131296276;
+			
+			// aapt resource value: 0x7f09000f
+			public const int formulaName = 2131296271;
 			
 			// aapt resource value: 0x7f090001
 			public const int gridLayout1 = 2131296257;
 			
-			// aapt resource value: 0x7f090032
-			public const int handle = 2131296306;
+			// aapt resource value: 0x7f090037
+			public const int handle = 2131296311;
 			
-			// aapt resource value: 0x7f09001f
-			public const int imageButton1 = 2131296287;
+			// aapt resource value: 0x7f090024
+			public const int imageButton1 = 2131296292;
 			
-			// aapt resource value: 0x7f090014
-			public const int linearLayout1 = 2131296276;
+			// aapt resource value: 0x7f090011
+			public const int linearLayout1 = 2131296273;
 			
-			// aapt resource value: 0x7f090025
-			public const int linearLayout3 = 2131296293;
+			// aapt resource value: 0x7f09002a
+			public const int linearLayout3 = 2131296298;
 			
-			// aapt resource value: 0x7f090021
-			public const int linearLayout4 = 2131296289;
+			// aapt resource value: 0x7f090026
+			public const int linearLayout4 = 2131296294;
 			
-			// aapt resource value: 0x7f090010
-			public const int linearLayout5 = 2131296272;
+			// aapt resource value: 0x7f090016
+			public const int linearLayout5 = 2131296278;
 			
-			// aapt resource value: 0x7f090013
-			public const int linearLayout7 = 2131296275;
+			// aapt resource value: 0x7f090019
+			public const int linearLayout7 = 2131296281;
 			
-			// aapt resource value: 0x7f09000f
-			public const int linearLayout8 = 2131296271;
+			// aapt resource value: 0x7f090015
+			public const int linearLayout8 = 2131296277;
 			
-			// aapt resource value: 0x7f090023
-			public const int numpadContainer = 2131296291;
+			// aapt resource value: 0x7f090028
+			public const int numpadContainer = 2131296296;
 			
 			// aapt resource value: 0x7f090000
 			public const int relativeLayout1 = 2131296256;
 			
-			// aapt resource value: 0x7f09002e
-			public const int rollButton = 2131296302;
-			
-			// aapt resource value: 0x7f090011
-			public const int rollFormulaEditText = 2131296273;
-			
-			// aapt resource value: 0x7f090012
-			public const int rollResult = 2131296274;
-			
 			// aapt resource value: 0x7f090033
-			public const int slidingDrawer1 = 2131296307;
-			
-			// aapt resource value: 0x7f090015
-			public const int space1 = 2131296277;
-			
-			// aapt resource value: 0x7f090027
-			public const int space10 = 2131296295;
-			
-			// aapt resource value: 0x7f090029
-			public const int space11 = 2131296297;
-			
-			// aapt resource value: 0x7f09002b
-			public const int space12 = 2131296299;
-			
-			// aapt resource value: 0x7f09002d
-			public const int space13 = 2131296301;
-			
-			// aapt resource value: 0x7f09002f
-			public const int space14 = 2131296303;
-			
-			// aapt resource value: 0x7f090030
-			public const int space15 = 2131296304;
-			
-			// aapt resource value: 0x7f090024
-			public const int space16 = 2131296292;
+			public const int rollButton = 2131296307;
 			
 			// aapt resource value: 0x7f090017
-			public const int space2 = 2131296279;
+			public const int rollFormulaEditText = 2131296279;
 			
-			// aapt resource value: 0x7f090019
-			public const int space3 = 2131296281;
+			// aapt resource value: 0x7f090018
+			public const int rollResult = 2131296280;
+			
+			// aapt resource value: 0x7f090013
+			public const int saveButton = 2131296275;
+			
+			// aapt resource value: 0x7f090038
+			public const int slidingDrawer1 = 2131296312;
 			
 			// aapt resource value: 0x7f09001a
-			public const int space4 = 2131296282;
+			public const int space1 = 2131296282;
 			
-			// aapt resource value: 0x7f09001b
-			public const int space5 = 2131296283;
+			// aapt resource value: 0x7f09002c
+			public const int space10 = 2131296300;
 			
-			// aapt resource value: 0x7f09001d
-			public const int space6 = 2131296285;
+			// aapt resource value: 0x7f09002e
+			public const int space11 = 2131296302;
+			
+			// aapt resource value: 0x7f090030
+			public const int space12 = 2131296304;
+			
+			// aapt resource value: 0x7f090032
+			public const int space13 = 2131296306;
+			
+			// aapt resource value: 0x7f090034
+			public const int space14 = 2131296308;
+			
+			// aapt resource value: 0x7f090035
+			public const int space15 = 2131296309;
+			
+			// aapt resource value: 0x7f090029
+			public const int space16 = 2131296297;
+			
+			// aapt resource value: 0x7f09001c
+			public const int space2 = 2131296284;
+			
+			// aapt resource value: 0x7f09001e
+			public const int space3 = 2131296286;
+			
+			// aapt resource value: 0x7f09001f
+			public const int space4 = 2131296287;
 			
 			// aapt resource value: 0x7f090020
-			public const int space7 = 2131296288;
+			public const int space5 = 2131296288;
 			
 			// aapt resource value: 0x7f090022
-			public const int space8 = 2131296290;
+			public const int space6 = 2131296290;
 			
-			// aapt resource value: 0x7f090016
-			public const int swapCalcModeButton = 2131296278;
+			// aapt resource value: 0x7f090025
+			public const int space7 = 2131296293;
+			
+			// aapt resource value: 0x7f090027
+			public const int space8 = 2131296295;
+			
+			// aapt resource value: 0x7f09001b
+			public const int swapCalcModeButton = 2131296283;
+			
+			// aapt resource value: 0x7f09000e
+			public const int textView1 = 2131296270;
 			
 			static Id()
 			{
@@ -332,10 +347,13 @@ namespace RollifyAndroid
 			public const int CalcNumpad = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int FormulaList = 2130903041;
+			public const int FormulaDetails = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int Main = 2130903042;
+			public const int FormulaList = 2130903042;
+			
+			// aapt resource value: 0x7f030003
+			public const int Main = 2130903043;
 			
 			static Layout()
 			{

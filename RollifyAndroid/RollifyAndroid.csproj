@@ -82,6 +82,7 @@
     <AndroidResource Include="Resources\layout\CalcNumpad.axml" />
     <AndroidResource Include="Resources\layout\FormulaList.axml" />
     <AndroidResource Include="Resources\values\Dimens.xml" />
+    <AndroidResource Include="Resources\layout\FormulaDetails.axml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
