@@ -24,7 +24,11 @@ namespace RollifyAndroid
 	)]
 	public class MainActivity : Activity, IUserInterface
 	{
-		AppLogic logic;
+		public AppLogic Logic 
+		{
+			get { return ((RollifyApplication)this.Application).Logic; }
+			set { ((RollifyApplication)this.Application).Logic = value; }
+		}
 
 		FormulaListFragment formulaList;
 
@@ -49,12 +53,14 @@ namespace RollifyAndroid
 			SetContentView (Resource.Layout.Main);
 
 			// Set up AppLogic
-			logic = new AppLogic(this);
+			if (Logic == null) {
+				Logic = new AppLogic (this);
+			}
 
 			// Attach fragments
 			var fragTransaction = FragmentManager.BeginTransaction ();
 			var numpadFragment = new CalcNumpadFragment(this);
-			formulaList = new FormulaListFragment (logic);
+			formulaList = new FormulaListFragment (Logic);
 			fragTransaction.Add (Resource.Id.numpadContainer, numpadFragment, "numpad");
 			fragTransaction.Add (Resource.Id.formulaListContainer, formulaList, "formulaList");
 			fragTransaction.Commit ();
@@ -80,8 +86,8 @@ namespace RollifyAndroid
 			calcSub.Click += delegate { InsertFormulaText("-"); };
 			calcMul.Click += delegate { InsertFormulaText("*"); };
 			calcDiv.Click += delegate { InsertFormulaText("/"); };
-			rollButton.Click += delegate { logic.Roll(rollFormulaEditor.Text); };
-			addFormulaButton.Click += delegate { logic.AddFormula(rollFormulaEditor.Text, rollFormulaEditor.Text, -1); };
+			rollButton.Click += delegate { Logic.Roll(rollFormulaEditor.Text); };
+			addFormulaButton.Click += delegate { Logic.AddFormula(rollFormulaEditor.Text, rollFormulaEditor.Text, -1); };
 		}
 
 		public string DatabaseLocation {
