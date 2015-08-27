@@ -16,6 +16,18 @@ namespace RollifyAndroid
 			base.OnCreate ();
 
 		}
+
+		public override void OnConfigurationChanged() {
+			base.OnConfigurationChanged ();
+		}
+
+		public override void OnLowMemory() {
+			base.OnLowMemory ();
+		}
+
+		public override void OnTerminate() {
+			base.OnTerminate ();
+		}
 	}
 }
 
