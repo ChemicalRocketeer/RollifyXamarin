@@ -37,7 +37,7 @@ namespace RollifyAndroid
 
 		public override View GetView(int position, View convertView, ViewGroup parent) {
 			View view = convertView ?? context.LayoutInflater.Inflate (Android.Resource.Layout.SimpleListItem1, null);
-			view.FindViewById<TextView> (Android.Resource.Id.Text1).Text = formulas [position].Expression;
+			view.FindViewById<TextView> (Android.Resource.Id.Text1).Text = formulas [position].Name;
 			return view;
 		}
 	}
