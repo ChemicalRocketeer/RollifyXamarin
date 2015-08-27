@@ -11,10 +11,15 @@ namespace Rollify.Core
 		private Database<Formula> formulaDatabase;
 		private Database<Category> categoryDatabase;
 
-		public AppLogic(IUserInterface ui) {
+		public AppLogic(IUserInterface ui, AppLogic oldLogic = null) {
 			this.ui = ui;
-			this.formulaDatabase = ui.GetDatabase<Formula> (ui.DatabaseLocation + "formula_database.db3");
-			this.categoryDatabase = ui.GetDatabase<Category> (ui.DatabaseLocation + "category_database.db3");
+			if (oldLogic == null) {
+				this.formulaDatabase = ui.GetDatabase<Formula> (ui.DatabaseLocation + "formula_database.db3");
+				this.categoryDatabase = ui.GetDatabase<Category> (ui.DatabaseLocation + "category_database.db3");
+			} else {
+				this.formulaDatabase = oldLogic.formulaDatabase;
+				this.categoryDatabase = oldLogic.categoryDatabase;
+			}
 		}
 
 		public void Roll(string expression) {
@@ -33,6 +38,7 @@ namespace Rollify.Core
 
 		public void AddFormula(string name, string expression, int categoryID) {
 			Formula f = new Formula {
+				ID = DatabaseConstants.ID_UNASSIGNED,
 				Name = name,
 				Expression = expression,
 				CategoryID = categoryID,

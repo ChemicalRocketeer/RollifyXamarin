@@ -54,7 +54,8 @@
     <Compile Include="ExtensionsAndroid.cs" />
     <Compile Include="Fragments\CalcNumpadFragment.cs" />
     <Compile Include="Fragments\FormulaListFragment.cs" />
-    <Compile Include="RollifyApplication.cs" />
+    <Compile Include="FormulaDetailsActivity.cs" />
+    <Compile Include="Globals.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

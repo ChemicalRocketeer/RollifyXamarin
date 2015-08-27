@@ -8,12 +8,12 @@ using Android.Content.Res;
 namespace RollifyAndroid
 {
 	[Application]
-	public class RollifyApplication : Application
+	public class Globals : Application
 	{
 		
-		public AppLogic Logic { get; set; }
+		public static AppLogic Logic { get; set; }
 
-		public RollifyApplication (IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+		public Globals (IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
 		{
 		}
 
