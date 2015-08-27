@@ -72,6 +72,10 @@ namespace Rollify.Core
 			}
 		}
 
+		public Formula GetFormula(int id) {
+			return formulaDatabase [id];
+		}
+
 		public IEnumerable<Formula> GetFormulasSorted() {
 			return 
 				from f in formulaDatabase.GetItems ()
