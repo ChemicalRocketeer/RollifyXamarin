@@ -7,6 +7,10 @@ using Rollify.SQLite;
 
 namespace Rollify.Core
 {
+	public static class DatabaseConstants {
+		public const int ID_UNASSIGNED = 0;
+	}
+
 	public class Database<T> where T : IDatabaseObject, new ()
 	{
 		static object locker = new object();
@@ -47,7 +51,7 @@ namespace Rollify.Core
 		/// </summary>
 		public int Save(T item) {
 			lock (locker) {
-				if (item.ID == 0) {
+				if (item.ID == DatabaseConstants.ID_UNASSIGNED) {
 					connection.Insert (item);
 					return item.ID;
 				} else {
