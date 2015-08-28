@@ -24,11 +24,6 @@ namespace RollifyAndroid
 	)]
 	public class MainActivity : Activity, IUserInterface
 	{
-		public AppLogic Logic 
-		{
-			get { return ((RollifyApplication)this.Application).Logic; }
-			set { ((RollifyApplication)this.Application).Logic = value; }
-		}
 
 		FormulaListFragment formulaList;
 
@@ -53,14 +48,12 @@ namespace RollifyAndroid
 			SetContentView (Resource.Layout.Main);
 
 			// Set up AppLogic
-			if (Logic == null) {
-				Logic = new AppLogic (this);
-			}
+			Globals.Logic = new AppLogic(this, Globals.Logic);
 
 			// Attach fragments
 			var fragTransaction = FragmentManager.BeginTransaction ();
 			var numpadFragment = new CalcNumpadFragment(this);
-			formulaList = new FormulaListFragment (Logic);
+			formulaList = new FormulaListFragment ();
 			fragTransaction.Add (Resource.Id.numpadContainer, numpadFragment, "numpad");
 			fragTransaction.Add (Resource.Id.formulaListContainer, formulaList, "formulaList");
 			fragTransaction.Commit ();
@@ -86,8 +79,19 @@ namespace RollifyAndroid
 			calcSub.Click += delegate { InsertFormulaText("-"); };
 			calcMul.Click += delegate { InsertFormulaText("*"); };
 			calcDiv.Click += delegate { InsertFormulaText("/"); };
-			rollButton.Click += delegate { Logic.Roll(rollFormulaEditor.Text); };
-			addFormulaButton.Click += delegate { Logic.AddFormula(rollFormulaEditor.Text, rollFormulaEditor.Text, -1); };
+			rollButton.Click += delegate { Globals.Logic.Roll(rollFormulaEditor.Text); };
+			addFormulaButton.Click += delegate { 
+				var intent = new Intent(this, typeof(FormulaDetailsActivity));
+				intent.PutExtra("formulaExpression", rollFormulaEditor.Text);
+				StartActivity(intent);
+			};
+		}
+
+		protected override void OnResume() { 
+			base.OnResume ();
+			// Set up AppLogic
+			Globals.Logic = new AppLogic(this, Globals.Logic);
+			UpdateFormulaList (Globals.Logic.GetFormulasSorted ());
 		}
 
 		public string DatabaseLocation {

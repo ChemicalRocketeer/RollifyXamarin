@@ -19,13 +19,11 @@ namespace RollifyAndroid
 	public class FormulaListFragment : Fragment
 	{
 
-		AppLogic logic;
-
 		FormulaAdapter formulaAdapter;
 		ListView formulaListView;
 
-		public FormulaListFragment(AppLogic logic) : base() {
-			this.logic = logic;
+		public FormulaListFragment() : base() {
+			
 		}
 
 		public override View OnCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -34,7 +32,7 @@ namespace RollifyAndroid
 			View layout = inflater.Inflate(Resource.Layout.FormulaList, container, false);
 
 			// Get our data
-			formulaAdapter = new FormulaAdapter (this.Activity, logic.GetFormulasSorted ().ToArray());
+			formulaAdapter = new FormulaAdapter (this.Activity, Globals.Logic.GetFormulasSorted ().ToArray());
 
 			// populate the listview
 			formulaListView = layout.FindViewById<ListView> (RollifyAndroid.Resource.Id.formulaListView);
@@ -43,7 +41,7 @@ namespace RollifyAndroid
 			// register click events
 			formulaListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) => {
 				Formula f = (Formula) formulaAdapter [e.Position];
-				logic.UseFormula(f);
+				Globals.Logic.UseFormula(f);
 			};
 			RegisterForContextMenu (formulaListView);
 
@@ -71,12 +69,15 @@ namespace RollifyAndroid
 			Formula f = formulaAdapter [info.Position];
 			switch (menuItem.ItemId) {
 			case 0:
-				logic.UseFormula (f);
+				Globals.Logic.UseFormula (f);
 				break;
 			case 1:
-				break; //TODO implement editing
+				var intent = new Intent (this.Activity, typeof(FormulaDetailsActivity));
+				intent.PutExtra ("formulaID", f.ID);
+				StartActivity (intent);
+				break;
 			case 2:
-				logic.DeleteFormula (f);
+				Globals.Logic.DeleteFormula (f);
 				break;
 			}
 			return true;

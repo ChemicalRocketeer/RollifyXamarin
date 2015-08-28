@@ -17,6 +17,14 @@ namespace Rollify.Core
 		public string Expression { get; set; }
 		public int CategoryID { get; set; }
 		public int Uses { get; set; }
+
+		public Formula() {
+			this.ID = DatabaseConstants.ID_UNASSIGNED;
+			this.Name = "Unnamed Formula";
+			this.Expression = "";
+			this.CategoryID = -1;
+			this.Uses = 0;
+		}
 	}
 }
 
