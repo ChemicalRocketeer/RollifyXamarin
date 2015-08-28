@@ -53,7 +53,7 @@ namespace RollifyAndroid
 			// Attach fragments
 			var fragTransaction = FragmentManager.BeginTransaction ();
 			var numpadFragment = new CalcNumpadFragment(this);
-			formulaList = new FormulaListFragment (Globals.Logic);
+			formulaList = new FormulaListFragment ();
 			fragTransaction.Add (Resource.Id.numpadContainer, numpadFragment, "numpad");
 			fragTransaction.Add (Resource.Id.formulaListContainer, formulaList, "formulaList");
 			fragTransaction.Commit ();
@@ -80,7 +80,18 @@ namespace RollifyAndroid
 			calcMul.Click += delegate { InsertFormulaText("*"); };
 			calcDiv.Click += delegate { InsertFormulaText("/"); };
 			rollButton.Click += delegate { Globals.Logic.Roll(rollFormulaEditor.Text); };
-			addFormulaButton.Click += delegate { Globals.Logic.AddFormula(rollFormulaEditor.Text, rollFormulaEditor.Text, -1); };
+			addFormulaButton.Click += delegate { 
+				var intent = new Intent(this, typeof(FormulaDetailsActivity));
+				intent.PutExtra("formulaExpression", rollFormulaEditor.Text);
+				StartActivity(intent);
+			};
+		}
+
+		protected override void OnResume() { 
+			base.OnResume ();
+			// Set up AppLogic
+			Globals.Logic = new AppLogic(this, Globals.Logic);
+			UpdateFormulaList (Globals.Logic.GetFormulasSorted ());
 		}
 
 		public string DatabaseLocation {

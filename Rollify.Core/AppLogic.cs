@@ -38,31 +38,20 @@ namespace Rollify.Core
 			}
 		}
 
-		public void AddFormula(string name, string expression, int categoryID) {
-			Formula f = new Formula {
-				ID = DatabaseConstants.ID_UNASSIGNED,
-				Name = name,
-				Expression = expression,
-				CategoryID = categoryID,
-				Uses = 0,
-			};
-			formulaDatabase.Save (f);
-			if (ui != null) {
-				ui.UpdateFormulaList (GetFormulasSorted ());
-			}
-		}
-
 		public void UseFormula(Formula f) {
 			if (ui != null) {
 				ui.InsertFormulaText ("[" + f.Name + "]");
 			}
 			f.Uses++;
 			formulaDatabase.Save (f);
-			// don't update the view because it would be confusing to have formulas move around as you use them.
+			// don't update the ui because it would be confusing to have formulas move around as you use them.
 		}
 
-		public void UpdateFormula (Formula f) {
+		public void SaveFormula (Formula f) {
 			formulaDatabase.Save (f);
+			if (ui != null) {
+				ui.UpdateFormulaList (GetFormulasSorted ());
+			}
 		}
 
 		public void DeleteFormula(Formula f) {
