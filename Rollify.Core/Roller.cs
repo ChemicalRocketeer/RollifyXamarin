@@ -7,28 +7,67 @@ using Rollify.Core.Extensions;
 namespace Rollify.Core
 {
 
-	class Operator {
-		public float Precedence;
-		public Action<Stack<long>> Operate;
-	}
-
 	// TODO use biginteger instead of long
 	public class Roller
 	{
 		abstract class Token
 		{
-			public string Content = "";
 			public abstract void Operate (Stack<long> stack);
+			public override abstract string ToString ();
 		}
 
 		class OpToken : Token
 		{
-			public Operator op;
-			public OpToken(Operator op) {
-				this.op = op;
+			public static readonly OpToken ADD;
+			public static readonly OpToken SUB;
+			public static readonly OpToken MUL;
+			public static readonly OpToken DIV;
+
+			private static Dictionary<string, OpToken> operators;
+			public string Symbol { get; private set; }
+			public float Precedence { get; private set; }
+			private Action<Stack<long>> implementation;
+
+			static OpToken() {
+				ADD = new OpToken ("+", 1.0f, delegate(Stack<long> stack) { stack.Push (stack.Pop () + stack.Pop ()); });
+				SUB = new OpToken ("-", 1.0f, delegate(Stack<long> stack) {
+					long b = stack.Pop();
+					long a = stack.Pop();
+					stack.Push (a - b);
+				});
+				MUL = new OpToken ("*", 1.0f, delegate(Stack<long> stack) { stack.Push (stack.Pop () * stack.Pop ()); });
+				DIV = new OpToken ("/", 1.0f, delegate(Stack<long> stack) {
+					long b = stack.Pop();
+					if (b == 0)
+						throw new InvalidExpressionException("Division by zero");
+					long a = stack.Pop();
+					stack.Push (a / b); 
+				});
+				operators = new Dictionary<string, OpToken>() {
+					{ ADD.Symbol, ADD },
+					{ SUB.Symbol, SUB },
+					{ MUL.Symbol, MUL },
+					{ DIV.Symbol, DIV },
+				};
 			}
+
+			public OpToken(string symbol, float precedence, Action<Stack<long>> implementation) {
+				this.Symbol = symbol;
+				this.Precedence = precedence;
+				this.implementation = implementation;
+			}
+
+			public static OpToken Get(string symbol) {
+				return operators.ContainsKey(symbol) ? operators [symbol] : null;
+			}
+
 			public override void Operate (Stack<long> stack) {
-				op.Operate (stack);
+				implementation (stack);
+			}
+
+			public override string ToString ()
+			{
+				return Symbol;
 			}
 		}
 
@@ -38,8 +77,14 @@ namespace Rollify.Core
 			public NumToken(long num) {
 				this.Num = num;
 			}
+
 			public override void Operate (Stack<long> stack) {
 				stack.Push (Num);
+			}
+
+			public override string ToString ()
+			{
+				return Num.ToString ();
 			}
 		}
 
@@ -53,6 +98,7 @@ namespace Rollify.Core
 				this.contents = contents;
 				this.r = r;
 			}
+
 			public override void Operate(Stack<long> stack) {
 				long iterations = r.Evaluate (multiplier);
 				bool negative = false;
@@ -67,6 +113,11 @@ namespace Rollify.Core
 				total = negative ? -total : total;
 				stack.Push (total);
 			}
+
+			public override string ToString ()
+			{
+				return String.Join (" ", contents);
+			}
 		}
 
 		class DiceToken : Token
@@ -76,6 +127,7 @@ namespace Rollify.Core
 			public long type;
 			public long keepCount;
 			public KeepStrategy strategy;
+
 			/// <summary>
 			/// Constructs a DiceToken using a postfix token list as the diecount (allowing expressions determining how many dice to roll)
 			/// </summary>
@@ -86,6 +138,7 @@ namespace Rollify.Core
 				this.strategy = strategy;
 				this.r = r;
 			}
+
 			/// <summary>
 			/// Constructs a DiceToken using a long instead of a postfix token list
 			/// </summary>
@@ -93,36 +146,25 @@ namespace Rollify.Core
 				this (new List<Token> (), type, keepCount, strategy, r) {
 				this.countTokens.Add (new NumToken(count));
 			}
+
 			public override void Operate(Stack<long> stack) {
 				long count = this.r.Evaluate(countTokens);
 				stack.Push(roll(type, count, keepCount, strategy));
 			}
+
+			public override string ToString ()
+			{
+				string keepS = "";
+				if (strategy == KeepStrategy.HIGHEST) {
+					keepS = "h" + keepCount;
+				} else if (strategy == KeepStrategy.LOWEST) {
+					keepS = "l" + keepCount;
+				}
+				return String.Join (" ", countTokens) + "d" + type.ToString () + keepS;
+			}
 		}
 
 		private static Random RAND = new Random ();
-
-		private static Dictionary<string, Operator> operators = new Dictionary<string, Operator> () {
-			{ "+", new Operator() { Precedence = 1f, Operate = delegate(Stack<long> stack) { stack.Push (stack.Pop () + stack.Pop ()); } } },
-			{ "-", new Operator() { Precedence = 1f, Operate = delegate(Stack<long> stack) 
-					{
-						long b = stack.Pop();
-						long a = stack.Pop();
-						stack.Push (a - b); 
-					} 
-				} 
-			},
-			{ "*", new Operator() { Precedence = 2f, Operate = delegate(Stack<long> stack) { stack.Push (stack.Pop () * stack.Pop ()); } } },
-			{ "/", new Operator() { Precedence = 2f, Operate = delegate(Stack<long> stack) 
-					{
-						long b = stack.Pop();
-						if (b == 0)
-							throw new InvalidExpressionException("Division by zero");
-						long a = stack.Pop();
-						stack.Push (a / b); 
-					} 
-				} 
-			},
-		};
 			
 
 		public string DebugString = "";
@@ -145,31 +187,22 @@ namespace Rollify.Core
 			List<Token> pfExpression = InfixToPostfix (expression, index, formulaName);
 			DebugMessage (expression + " in postfix: " + string.Join (" ", pfExpression));
 
-			// now that we have an arithmetic expression in postfix notation, we can easily process it
+			return Evaluate (pfExpression);
+		}
+
+		/// <summary>
+		/// Evaluate an expression that's been converted to postfix
+		/// </summary>
+		/// <param name="tokens">A list of tokens in postfix notation</param>
+		private long Evaluate(List<Token> postfix) {
 			Stack<long> stack = new Stack<long> ();
-			for (int i = 0; i < pfExpression.Count; i++) {
-				string token = pfExpression [i].Content;
-				long numToken = 0;
-				if (Int64.TryParse(token, out numToken)) { 
-					// token is a number
-					stack.Push (numToken);
-				} else { 
-					// token is operator
-					Operator op = operators[token];
-					if (op == null)
-						throw new InvalidExpressionException("invalid operator " + token);
-					op.Operate(stack);
-				}
+			for (int i = 0; i < postfix.Count; i++) {
+				postfix [i].Operate(stack);
 			}
 			if (stack.Count != 1) {
 				throw InvalidExpressionException.DEFAULT;
 			}
-
 			return stack.Pop();
-		}
-
-		private long Evaluate(List<Token> tokens) {
-			return 0;
 		}
 
 		// converts an infix dice formula to a postfix list of tokens. Can return throw InvalidExpressionException if the expression is invalid.
@@ -214,7 +247,7 @@ namespace Rollify.Core
 			while (operatorStack.Count > 0) {
 				if (operatorStack.Peek () == "(")
 					throw new InvalidExpressionException("mismatched parentheses");
-				output.Add(new OpToken(operators[operatorStack.Pop ()]));
+				output.Add(OpToken.Get(operatorStack.Pop ()));
 			}
 
 			if (formulaName != null) {
@@ -367,14 +400,14 @@ namespace Rollify.Core
 		private static void PushOperatorToStack(String op, Stack<string> operatorStack, List<Token> output) {
 			float precedence = OperatorPrecedence (op);
 			while (operatorStack.Count > 0 && OperatorPrecedence (operatorStack.Peek ()) >= precedence) {
-				output.Add (new OpToken(operators[operatorStack.Pop ()]));
+				output.Add (OpToken.Get(operatorStack.Pop ()));
 			}
 			operatorStack.Push (op);
 		}
 
 		private static float OperatorPrecedence(string op) {
-			Operator o;
-			if (operators.TryGetValue (op, out o)) {
+			OpToken o = OpToken.Get(op);
+			if (o != null) {
 				return o.Precedence;
 			} else {
 				return -1f;
