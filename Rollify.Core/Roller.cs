@@ -7,72 +7,164 @@ using Rollify.Core.Extensions;
 namespace Rollify.Core
 {
 
-	class Operator {
-		public float Precedence;
-		public Action<Stack<long>> Operate;
-	}
-
-	class Token
-	{
-		public string Content = "";
-		public bool IsNumber = false;
-		public long Num {
-			get { return Int64.Parse (Content); }
-			set { Content = value.ToString (); }
-		}
-
-		public override string ToString ()
-		{
-			return Content;
-		}
-	}
-
-	static class Ext {
-		public static void Add(this List<Token> lst, long c) {
-			lst.Add (new Token { Num = c, IsNumber = true });
-		}
-
-		public static void Add(this List<Token> lst, string c) {
-			lst.Add (new Token { Content = c });
-		}
-	}
-
 	// TODO use biginteger instead of long
 	public class Roller
 	{
+		abstract class Token
+		{
+			public abstract void Operate (Stack<long> stack);
+			public override abstract string ToString ();
+		}
 
-		private class RollDefinition {
-			public long DieCount = 1;
-			public long DieType = 1;
-			public long KeepCount = 0;
-			public KeepStrategy KeepStrategy = KeepStrategy.ALL;
-			public bool Sort = false;
+		class OpToken : Token
+		{
+			public static readonly OpToken ADD;
+			public static readonly OpToken SUB;
+			public static readonly OpToken MUL;
+			public static readonly OpToken DIV;
+
+			private static Dictionary<string, OpToken> operators;
+			public string Symbol { get; private set; }
+			public float Precedence { get; private set; }
+			private Action<Stack<long>> implementation;
+
+			static OpToken() {
+				ADD = new OpToken ("+", 1.0f, delegate(Stack<long> stack) { stack.Push (stack.Pop () + stack.Pop ()); });
+				SUB = new OpToken ("-", 1.0f, delegate(Stack<long> stack) {
+					long b = stack.Pop();
+					long a = stack.Pop();
+					stack.Push (a - b);
+				});
+				MUL = new OpToken ("*", 1.0f, delegate(Stack<long> stack) { stack.Push (stack.Pop () * stack.Pop ()); });
+				DIV = new OpToken ("/", 1.0f, delegate(Stack<long> stack) {
+					long b = stack.Pop();
+					if (b == 0)
+						throw new InvalidExpressionException("Division by zero");
+					long a = stack.Pop();
+					stack.Push (a / b); 
+				});
+				operators = new Dictionary<string, OpToken>() {
+					{ ADD.Symbol, ADD },
+					{ SUB.Symbol, SUB },
+					{ MUL.Symbol, MUL },
+					{ DIV.Symbol, DIV },
+				};
+			}
+
+			public OpToken(string symbol, float precedence, Action<Stack<long>> implementation) {
+				this.Symbol = symbol;
+				this.Precedence = precedence;
+				this.implementation = implementation;
+			}
+
+			public static OpToken Get(string symbol) {
+				return operators.ContainsKey(symbol) ? operators [symbol] : null;
+			}
+
+			public override void Operate (Stack<long> stack) {
+				implementation (stack);
+			}
+
+			public override string ToString ()
+			{
+				return Symbol;
+			}
+		}
+
+		class NumToken : Token
+		{
+			public long Num { get; private set; }
+			public NumToken(long num) {
+				this.Num = num;
+			}
+
+			public override void Operate (Stack<long> stack) {
+				stack.Push (Num);
+			}
+
+			public override string ToString ()
+			{
+				return Num.ToString ();
+			}
+		}
+
+		class ParenToken : Token
+		{
+			private Roller r;
+			public List<Token> multiplier;
+			public List<Token> contents;
+			public ParenToken(List<Token> multiplier, List<Token> contents, Roller r) {
+				this.multiplier = multiplier;
+				this.contents = contents;
+				this.r = r;
+			}
+
+			public override void Operate(Stack<long> stack) {
+				long iterations = r.Evaluate (multiplier);
+				bool negative = false;
+				if (iterations < 0) {
+					negative = true;
+					iterations = -iterations;
+				}
+				long total = 0;
+				for (int i = 0; i < iterations; i++) {
+					total += r.Evaluate (contents);
+				}
+				total = negative ? -total : total;
+				stack.Push (total);
+			}
+
+			public override string ToString ()
+			{
+				return String.Join (" ", contents);
+			}
+		}
+
+		class DiceToken : Token
+		{
+			public Roller r;
+			public List<Token> countTokens;
+			public long type;
+			public long keepCount;
+			public KeepStrategy strategy;
+
+			/// <summary>
+			/// Constructs a DiceToken using a postfix token list as the diecount (allowing expressions determining how many dice to roll)
+			/// </summary>
+			public DiceToken(List<Token> count, long type, long keepCount, KeepStrategy strategy, Roller r) {
+				this.countTokens = count;
+				this.type = type;
+				this.keepCount = keepCount;
+				this.strategy = strategy;
+				this.r = r;
+			}
+
+			/// <summary>
+			/// Constructs a DiceToken using a long instead of a postfix token list
+			/// </summary>
+			public DiceToken(long count, long type, long keepCount, KeepStrategy strategy, Roller r) : 
+				this (new List<Token> (), type, keepCount, strategy, r) {
+				this.countTokens.Add (new NumToken(count));
+			}
+
+			public override void Operate(Stack<long> stack) {
+				long count = this.r.Evaluate(countTokens);
+				stack.Push(roll(type, count, keepCount, strategy));
+			}
+
+			public override string ToString ()
+			{
+				string keepS = "";
+				if (strategy == KeepStrategy.HIGHEST) {
+					keepS = "h" + keepCount;
+				} else if (strategy == KeepStrategy.LOWEST) {
+					keepS = "l" + keepCount;
+				}
+				return String.Join (" ", countTokens) + "d" + type.ToString () + keepS;
+			}
 		}
 
 		private static Random RAND = new Random ();
-
-		private static Dictionary<string, Operator> operators = new Dictionary<string, Operator> () {
-			{ "+", new Operator() { Precedence = 1f, Operate = delegate(Stack<long> stack) { stack.Push (stack.Pop () + stack.Pop ()); } } },
-			{ "-", new Operator() { Precedence = 1f, Operate = delegate(Stack<long> stack) 
-					{
-						long b = stack.Pop();
-						long a = stack.Pop();
-						stack.Push (a - b); 
-					} 
-				} 
-			},
-			{ "*", new Operator() { Precedence = 2f, Operate = delegate(Stack<long> stack) { stack.Push (stack.Pop () * stack.Pop ()); } } },
-			{ "/", new Operator() { Precedence = 2f, Operate = delegate(Stack<long> stack) 
-					{
-						long b = stack.Pop();
-						if (b == 0)
-							throw new InvalidExpressionException("Division by zero");
-						long a = stack.Pop();
-						stack.Push (a / b); 
-					} 
-				} 
-			},
-		};
 			
 
 		public string DebugString = "";
@@ -92,48 +184,36 @@ namespace Rollify.Core
 		// Throws InvalidExpressionException with details if the expression is invalid
 		private long Evaluate(string expression, int index, string formulaName = null) {
 
-			if (formulaName != null) {
-				// we are evaluating a formula, and will push it to the formulaNest so that we can prevent self-referential formulas
-				if (formulaNest.Contains (formulaName)) {
-					
-					throw new InvalidExpressionException ("[" + formulaName + "] is self-referential");
-				}
-				formulaNest.Push(formulaName);
-			}
-
-			List<Token> pfExpression = InfixToPostfix (expression, index);
+			List<Token> pfExpression = InfixToPostfix (expression, index, formulaName);
 			DebugMessage (expression + " in postfix: " + string.Join (" ", pfExpression));
 
-			// now that we have an arithmetic expression in postfix notation, we can easily process it
+			return Evaluate (pfExpression);
+		}
+
+		/// <summary>
+		/// Evaluate an expression that's been converted to postfix
+		/// </summary>
+		/// <param name="tokens">A list of tokens in postfix notation</param>
+		private long Evaluate(List<Token> postfix) {
 			Stack<long> stack = new Stack<long> ();
-			for (int i = 0; i < pfExpression.Count; i++) {
-				string token = pfExpression [i].Content;
-				long numToken = 0;
-				if (Int64.TryParse(token, out numToken)) { 
-					// token is a number
-					stack.Push (numToken);
-				} else { 
-					// token is operator
-					Operator op = operators[token];
-					if (op == null)
-						throw new InvalidExpressionException("invalid operator " + token);
-					op.Operate(stack);
-				}
+			for (int i = 0; i < postfix.Count; i++) {
+				postfix [i].Operate(stack);
 			}
 			if (stack.Count != 1) {
 				throw InvalidExpressionException.DEFAULT;
 			}
-
-			if (formulaName != null) {
-				formulaNest.Pop ();
-			}
-
 			return stack.Pop();
 		}
 
-
 		// converts an infix dice formula to a postfix list of tokens. Can return throw InvalidExpressionException if the expression is invalid.
-		private List<Token> InfixToPostfix(string input, int index) {
+		private List<Token> InfixToPostfix(string input, int index, string formulaName) {
+
+			if (formulaName != null) {
+				// we are evaluating a formula, and will push it to the formulaNest so that we can prevent self-referential formulas
+				AssertNonSelfReferentialFormula(formulaName);
+				formulaNest.Push(formulaName);
+			}
+
 			StringScanner steve = new StringScanner (input, index);
 			Stack<string> operatorStack = new Stack<string> ();
 			List<Token> output = new List<Token>();
@@ -147,7 +227,7 @@ namespace Rollify.Core
 				} else if (IsCharOperator (steve.Peek ())) {
 					ProcessOperator (steve, operatorStack, output, lastTokenWasNumber, ref tokenIsNumber);
 				} else if (Char.IsDigit (steve.Peek ())) {
-					output.Add (steve.ReadLong ());
+					output.Add (new NumToken(steve.ReadLong ()));
 					tokenIsNumber = true;
 				} else if (steve.Peek () == '(') {
 					ProcessParentheses(steve, output, lastTokenWasNumber);
@@ -167,12 +247,17 @@ namespace Rollify.Core
 			while (operatorStack.Count > 0) {
 				if (operatorStack.Peek () == "(")
 					throw new InvalidExpressionException("mismatched parentheses");
-				output.Add(operatorStack.Pop ());
+				output.Add(OpToken.Get(operatorStack.Pop ()));
 			}
+
+			if (formulaName != null) {
+				formulaNest.Pop ();
+			}
+
 			return output;
 		}
 
-		private long ProcessDieDef(
+		private Token ProcessDieDef(
 				StringScanner steve, 
 				Stack<string> opStack, 
 				List<Token> output,
@@ -181,66 +266,46 @@ namespace Rollify.Core
 			if (!steve.HasNext())
 				throw new InvalidExpressionException("no die type given");
 			if (Char.IsDigit (steve.Peek ())) { // check that the syntax is valid before just trying to read it
-				bool negative = false; // do we negate this die after rolling it?
-				long dieCount = 1;
+				Token dieCount = new NumToken(1);
 				if (lastTokenWasNumber) {
 					// the last number was the die count, because it was followed by a 'd'
-					dieCount = output.Last().Num;
-					if (dieCount < 0) {
-						// if the diecount is negative we will roll with the positive diecount, but negate the end result.
-						// basically, "-5d6" is treated as "-(5d6)"
-						negative = true;
-						DebugMessage (dieCount.ToString() + "d" + dieCount + " is negative");
-						dieCount = -dieCount;
-					}
+					dieCount = output.Last();
 					output.RemoveAt (output.Count - 1);
 				}
-				long dieType = steve.ReadLong();
+				long dieType = steve.ReadLong(); // this is safe because we checked that the next char is a digit
 				// we now know that die type and the die count, now we need to see if there are extra instructions for the roll
-				long keepCount = dieCount;
+				long keepCount = 1;
 				KeepStrategy keepstrat = KeepStrategy.ALL;
 				if (steve.HasNext () && char.IsLetter (steve.Peek ()) && Char.ToLower (steve.Peek ()) != 'd') {
 					char extension = Char.ToLower (steve.Read ());
 					if (extension == 'h') {
 						keepstrat = KeepStrategy.HIGHEST;
-						keepCount = 1;
 						steve.TryReadLong (ref keepCount);
 					} else if (extension == 'l') {
 						keepstrat = KeepStrategy.LOWEST;
-						keepCount = 1;
 						steve.TryReadLong (ref keepCount);
 					} else {
 						throw new InvalidExpressionException("invalid die extension " + extension);
 					}
 				}
-				// calculate and output the die roll
-				long result = roll (dieType, dieCount, keepCount, keepstrat);
-				if (negative)
-					result = -result;
-				return result;
+				var countList = new List<Token> ();
+				countList.Add (dieCount);
+				return new DiceToken (countList, dieType, keepCount, keepstrat, this);
 			} else {
 				throw new InvalidExpressionException("no die type given");
 			}
 		}
 
-		// looks for a number in the list of tokens to use as a multiplier. 
-		// If it finds one, it executes toIterate that number of times, else executes it only once.
-		private long LookForMultiplier(List<Token> tokens, bool lastTokenWasNumber, Func<long> toIterate) {
-			long iterationCount = 1;
+		// looks to see if the last token can be used as a multiplier. 
+		private List<Token> LookForMultiplier(List<Token> tokens, bool lastTokenWasNumber) {
+			List<Token> iterationCount = new List<Token>();
 			if (lastTokenWasNumber) {
-				iterationCount = tokens.Last ().Num;
+				iterationCount.Add (tokens[tokens.Count - 1]);
 				tokens.RemoveAt (tokens.Count - 1);
+			} else {
+				iterationCount.Add (new NumToken (1));
 			}
-			bool negative = false;
-			if (iterationCount < 0) {
-				negative = true;
-				iterationCount = -iterationCount;
-			}
-			long result = 0;
-			for (int i = 0; i < iterationCount; i++) {
-				result += toIterate();
-			}
-			return negative ? -result : result;
+			return iterationCount;
 		}
 
 		// computes and returns the value of an expression in parentheses.
@@ -274,12 +339,16 @@ namespace Rollify.Core
 			// it is implemented as iterative addition, allowing us to re-roll the dice every iteration.
 			// If there are no dice defs in the parentheses, then this will yield the same result as normal multiplication.
 			string expr = ExtractParentheses (scanner);
-			output.Add (LookForMultiplier (output, lastTokenWasNumber, () => Evaluate (expr, 0)));
+			List<Token> multiplier = LookForMultiplier (output, lastTokenWasNumber);
+			ParenToken toke = new ParenToken (multiplier, InfixToPostfix (expr, 0, null), this);
+			output.Add (toke);
 		}
 
 		private void ProcessFormula(StringScanner scanner, List<Token> output, bool lastTokenWasNumber) {
 			Formula f = ExtractFormula (scanner);
-			output.Add (LookForMultiplier (output, lastTokenWasNumber, () => Evaluate (f.Expression, 0, f.Name)));
+			List<Token> multiplier = LookForMultiplier (output, lastTokenWasNumber);
+			ParenToken toke = new ParenToken (multiplier, InfixToPostfix (f.Expression, 0, f.Name), this);
+			output.Add (toke);
 		}
 
 		// reads the name of a formula, evaluates its expression, and returns the result.
@@ -316,7 +385,7 @@ namespace Rollify.Core
 				long num = 1;
 				// if there's an expression after the minus sign, just process it and negate it
 				if (steve.TryReadLong (ref num) || Char.ToLower (steve.Peek ()) == 'd' || steve.Peek() == '(' || steve.Peek() == '[') {
-					output.Add (-num);
+					output.Add (new NumToken(-num));
 					// if the next token is a diedef, paren, or formula, iterativelyAdd will detect the -1 and use it to negate the expression
 					tokenIsNumber = true;
 				} else { 
@@ -331,14 +400,14 @@ namespace Rollify.Core
 		private static void PushOperatorToStack(String op, Stack<string> operatorStack, List<Token> output) {
 			float precedence = OperatorPrecedence (op);
 			while (operatorStack.Count > 0 && OperatorPrecedence (operatorStack.Peek ()) >= precedence) {
-				output.Add (operatorStack.Pop ());
+				output.Add (OpToken.Get(operatorStack.Pop ()));
 			}
 			operatorStack.Push (op);
 		}
 
 		private static float OperatorPrecedence(string op) {
-			Operator o;
-			if (operators.TryGetValue (op, out o)) {
+			OpToken o = OpToken.Get(op);
+			if (o != null) {
 				return o.Precedence;
 			} else {
 				return -1f;
@@ -357,8 +426,17 @@ namespace Rollify.Core
 
 		// TODO redesign keep strategy to allow keeping both highest and lowest
 		private static long roll(long dieType, long dieCount, long keepCount, KeepStrategy keepStrategy) {
+
 			if (dieType <= 1) {
 				throw new InvalidExpressionException ("invalid die");
+			}
+
+			// if the diecount is negative we will roll with the positive diecount, but negate the end result.
+			// basically, "-5d6" is treated as "-(5d6)"
+			bool negative = false;
+			if (dieCount < 0) {
+				negative = true;
+				dieCount = -dieCount;
 			}
 
 			keepCount = Math.Min (keepCount, dieCount);
@@ -389,7 +467,16 @@ namespace Rollify.Core
 					}
 				}
 			}
+			if (negative) {
+				result = -result;
+			}
 			return result;
+		}
+
+		private void AssertNonSelfReferentialFormula(string formulaName) {
+			if (formulaNest.Contains (formulaName)) {
+				throw new InvalidExpressionException ("[" + formulaName + "] is self-referential");
+			}
 		}
 
 		private void DebugMessage(string message) {

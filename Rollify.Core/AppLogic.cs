@@ -30,8 +30,9 @@ namespace Rollify.Core
 					ui.DisplayRollResult (r.Evaluate (expression).ToString ());
 				} catch (InvalidExpressionException e) {
 					ui.DisplayRollError (e.Message);
-				} catch (Exception) {
+				} catch (Exception e) {
 					ui.DisplayRollError ("Unknown error");
+					ui.DisplayDebug (e.Message);
 				}
 				ui.DisplayDebug (r.DebugString);
 				ui.RollingEnabled = true;
