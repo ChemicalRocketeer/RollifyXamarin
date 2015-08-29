@@ -115,6 +115,9 @@ namespace RollifyAndroid
 			// aapt resource value: 0x7f050000
 			public const int calculatorTextSize = 2131034112;
 			
+			// aapt resource value: 0x7f050004
+			public const int slidingDrawerElevation = 2131034116;
+			
 			static Dimension()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();

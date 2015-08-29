@@ -5,4 +5,5 @@
 	<dimen name="calculatorOperatorTextSize">32sp</dimen>
 	<dimen name="calculatorSpaceSize">0dp</dimen>
 	<dimen name="calculatorButtonElevation">4dp</dimen>
+	<dimen name="slidingDrawerElevation">8dp</dimen>
 </resources>
