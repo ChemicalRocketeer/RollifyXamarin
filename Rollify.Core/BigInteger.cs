@@ -135,10 +135,13 @@ using System;
 
 public class BigInteger
 {
+	public static readonly BigInteger MAX_INT = new BigInteger (Int32.MaxValue);
+	public static readonly BigInteger MAX_LONG = new BigInteger (Int64.MaxValue);
+
         // maximum length of the BigInteger in uint (4 bytes)
         // change this to suit the required level of precision.
 
-        private const int maxLength = 70;
+        private const int maxLength = 70; // maxbits = maxlength * 4 * 8
 
         // primes smaller than 2000 to test the generated prime number
 
