@@ -51,32 +51,27 @@ namespace Rollify.Core
 		}
 
 		// reads until the cursor hits a non-digit
-		public long ReadLong() {
+		public BigInteger ReadLong() {
 			StringBuilder steve = new StringBuilder ();
 			while (HasNext() && Char.IsDigit (Peek())) {
 				steve.Append(Read ());
 			}
-			if (steve.Length > 18) {
-				throw new InvalidExpressionException ("Number too large: " + steve.ToString ());
-			}
-			return Int64.Parse (steve.ToString());
+			return new BigInteger(steve.ToString(), 10);
 		}
 
 		// reads until the cursor hits a non-digit, and assigns the result to the given result variable.
 		// returns true if parse was successful. If parse is unsuccessful, result is unchanged.
-		public bool TryReadLong(ref long result) {
+		public bool TryReadLong(ref BigInteger result) {
+			// read the digits into a string
 			StringBuilder steve = new StringBuilder ();
 			while (HasNext() && Char.IsDigit (Peek())) {
 				steve.Append(Read ());
 			}
-			if (steve.Length > 18) {
-				throw new InvalidExpressionException ("Number too large: " + steve.ToString ());
-			}
-			long temp = result;
-			if (Int64.TryParse (steve.ToString(), out temp)) {
-				result = temp;
+			// parse the string
+			try {
+				result = new BigInteger(steve.ToString(), 10);
 				return true;
-			} else {
+			} catch (ArithmeticException) {
 				return false;
 			}
 		}

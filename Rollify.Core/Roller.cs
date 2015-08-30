@@ -7,12 +7,14 @@ using Rollify.Core.Extensions;
 namespace Rollify.Core
 {
 
-	// TODO use biginteger instead of long
 	public class Roller
 	{
+		public static readonly BigInteger MAX_DIECOUNT = new BigInteger ("1000000", 10); // 10^6
+		public static readonly BigInteger MAX_DIETYPE = new BigInteger ("1000000000000000", 10); // 10^15
+
 		abstract class Token
 		{
-			public abstract void Operate (Stack<long> stack);
+			public abstract void Operate (Stack<BigInteger> stack);
 			public override abstract string ToString ();
 		}
 
@@ -26,21 +28,21 @@ namespace Rollify.Core
 			private static Dictionary<string, OpToken> operators;
 			public string Symbol { get; private set; }
 			public float Precedence { get; private set; }
-			private Action<Stack<long>> implementation;
+			private Action<Stack<BigInteger>> implementation;
 
 			static OpToken() {
-				ADD = new OpToken ("+", 1.0f, delegate(Stack<long> stack) { stack.Push (stack.Pop () + stack.Pop ()); });
-				SUB = new OpToken ("-", 1.0f, delegate(Stack<long> stack) {
-					long b = stack.Pop();
-					long a = stack.Pop();
+				ADD = new OpToken ("+", 1.0f, delegate(Stack<BigInteger> stack) { stack.Push (stack.Pop () + stack.Pop ()); });
+				SUB = new OpToken ("-", 1.0f, delegate(Stack<BigInteger> stack) {
+					BigInteger b = stack.Pop();
+					BigInteger a = stack.Pop();
 					stack.Push (a - b);
 				});
-				MUL = new OpToken ("*", 1.0f, delegate(Stack<long> stack) { stack.Push (stack.Pop () * stack.Pop ()); });
-				DIV = new OpToken ("/", 1.0f, delegate(Stack<long> stack) {
-					long b = stack.Pop();
+				MUL = new OpToken ("*", 1.0f, delegate(Stack<BigInteger> stack) { stack.Push (stack.Pop () * stack.Pop ()); });
+				DIV = new OpToken ("/", 1.0f, delegate(Stack<BigInteger> stack) {
+					BigInteger b = stack.Pop();
 					if (b == 0)
 						throw new InvalidExpressionException("Division by zero");
-					long a = stack.Pop();
+					BigInteger a = stack.Pop();
 					stack.Push (a / b); 
 				});
 				operators = new Dictionary<string, OpToken>() {
@@ -51,7 +53,7 @@ namespace Rollify.Core
 				};
 			}
 
-			public OpToken(string symbol, float precedence, Action<Stack<long>> implementation) {
+			public OpToken(string symbol, float precedence, Action<Stack<BigInteger>> implementation) {
 				this.Symbol = symbol;
 				this.Precedence = precedence;
 				this.implementation = implementation;
@@ -61,7 +63,7 @@ namespace Rollify.Core
 				return operators.ContainsKey(symbol) ? operators [symbol] : null;
 			}
 
-			public override void Operate (Stack<long> stack) {
+			public override void Operate (Stack<BigInteger> stack) {
 				implementation (stack);
 			}
 
@@ -73,12 +75,12 @@ namespace Rollify.Core
 
 		class NumToken : Token
 		{
-			public long Num { get; private set; }
-			public NumToken(long num) {
+			public BigInteger Num { get; private set; }
+			public NumToken(BigInteger num) {
 				this.Num = num;
 			}
 
-			public override void Operate (Stack<long> stack) {
+			public override void Operate (Stack<BigInteger> stack) {
 				stack.Push (Num);
 			}
 
@@ -99,14 +101,15 @@ namespace Rollify.Core
 				this.r = r;
 			}
 
-			public override void Operate(Stack<long> stack) {
-				long iterations = r.Evaluate (multiplier);
+			public override void Operate(Stack<BigInteger> stack) {
+				BigInteger iterations = r.Evaluate (multiplier);
+
 				bool negative = false;
 				if (iterations < 0) {
 					negative = true;
 					iterations = -iterations;
 				}
-				long total = 0;
+				BigInteger total = 0;
 				for (int i = 0; i < iterations; i++) {
 					total += r.Evaluate (contents);
 				}
@@ -124,14 +127,14 @@ namespace Rollify.Core
 		{
 			public Roller r;
 			public List<Token> countTokens;
-			public long type;
+			public BigInteger type;
 			public long keepCount;
 			public KeepStrategy strategy;
 
 			/// <summary>
 			/// Constructs a DiceToken using a postfix token list as the diecount (allowing expressions determining how many dice to roll)
 			/// </summary>
-			public DiceToken(List<Token> count, long type, long keepCount, KeepStrategy strategy, Roller r) {
+			public DiceToken(List<Token> count, BigInteger type, long keepCount, KeepStrategy strategy, Roller r) {
 				this.countTokens = count;
 				this.type = type;
 				this.keepCount = keepCount;
@@ -140,16 +143,20 @@ namespace Rollify.Core
 			}
 
 			/// <summary>
-			/// Constructs a DiceToken using a long instead of a postfix token list
+			/// Constructs a DiceToken using a BigInteger instead of a postfix token list
 			/// </summary>
-			public DiceToken(long count, long type, long keepCount, KeepStrategy strategy, Roller r) : 
+			public DiceToken(BigInteger count, BigInteger type, long keepCount, KeepStrategy strategy, Roller r) : 
 				this (new List<Token> (), type, keepCount, strategy, r) {
 				this.countTokens.Add (new NumToken(count));
 			}
 
-			public override void Operate(Stack<long> stack) {
-				long count = this.r.Evaluate(countTokens);
-				stack.Push(roll(type, count, keepCount, strategy));
+			public override void Operate(Stack<BigInteger> stack) {
+				BigInteger count = this.r.Evaluate(countTokens);
+				if (count > MAX_DIECOUNT) {
+					throw new InvalidExpressionException (count + " is too many dice");
+				}
+				long countL = count.LongValue ();
+				stack.Push(roll(type, countL, keepCount, strategy));
 			}
 
 			public override string ToString ()
@@ -176,13 +183,13 @@ namespace Rollify.Core
 			this.formulaNest = new Stack<string> ();
 		}
 
-		public long Evaluate(string expression) {
+		public BigInteger Evaluate(string expression) {
 			return Evaluate (expression, 0);
 		}
 
 		// Evaluates a dice expression
 		// Throws InvalidExpressionException with details if the expression is invalid
-		private long Evaluate(string expression, int index, string formulaName = null) {
+		private BigInteger Evaluate(string expression, int index, string formulaName = null) {
 
 			List<Token> pfExpression = InfixToPostfix (expression, index, formulaName);
 			DebugMessage (expression + " in postfix: " + string.Join (" ", pfExpression));
@@ -194,8 +201,8 @@ namespace Rollify.Core
 		/// Evaluate an expression that's been converted to postfix
 		/// </summary>
 		/// <param name="tokens">A list of tokens in postfix notation</param>
-		private long Evaluate(List<Token> postfix) {
-			Stack<long> stack = new Stack<long> ();
+		private BigInteger Evaluate(List<Token> postfix) {
+			Stack<BigInteger> stack = new Stack<BigInteger> ();
 			for (int i = 0; i < postfix.Count; i++) {
 				postfix [i].Operate(stack);
 			}
@@ -210,7 +217,7 @@ namespace Rollify.Core
 
 			if (formulaName != null) {
 				// we are evaluating a formula, and will push it to the formulaNest so that we can prevent self-referential formulas
-				AssertNonSelfReferentialFormula(formulaName);
+				Assert(!formulaNest.Contains (formulaName), "[" + formulaName + "] is self-referential");
 				formulaNest.Push(formulaName);
 			}
 
@@ -245,8 +252,7 @@ namespace Rollify.Core
 				lastTokenWasNumber = tokenIsNumber;
 			}
 			while (operatorStack.Count > 0) {
-				if (operatorStack.Peek () == "(")
-					throw new InvalidExpressionException("mismatched parentheses");
+				Assert (operatorStack.Peek () == "(", "mismatched parentheses");
 				output.Add(OpToken.Get(operatorStack.Pop ()));
 			}
 
@@ -272,7 +278,7 @@ namespace Rollify.Core
 					dieCount = output.Last();
 					output.RemoveAt (output.Count - 1);
 				}
-				long dieType = steve.ReadLong(); // this is safe because we checked that the next char is a digit
+				BigInteger dieType = steve.ReadLong(); // this is safe because we checked that the next char is a digit
 				// we now know that die type and the die count, now we need to see if there are extra instructions for the roll
 				long keepCount = 1;
 				KeepStrategy keepstrat = KeepStrategy.ALL;
@@ -280,10 +286,24 @@ namespace Rollify.Core
 					char extension = Char.ToLower (steve.Read ());
 					if (extension == 'h') {
 						keepstrat = KeepStrategy.HIGHEST;
-						steve.TryReadLong (ref keepCount);
+						BigInteger temp = null;
+						if (steve.TryReadLong (ref temp)) {
+							if (temp > MAX_DIECOUNT) {
+								throw new InvalidExpressionException (temp.ToString () + " is too many dice");
+							} else {
+								keepCount = temp.LongValue ();
+							}
+						}
 					} else if (extension == 'l') {
 						keepstrat = KeepStrategy.LOWEST;
-						steve.TryReadLong (ref keepCount);
+						BigInteger temp = null;
+						if (steve.TryReadLong (ref temp)) {
+							if (temp > MAX_DIECOUNT) {
+								throw new InvalidExpressionException (temp.ToString () + " is too many dice");
+							} else {
+								keepCount = temp.LongValue ();
+							}
+						}
 					} else {
 						throw new InvalidExpressionException("invalid die extension " + extension);
 					}
@@ -382,7 +402,7 @@ namespace Rollify.Core
 				if (!steve.HasNext ()) {
 					throw new InvalidExpressionException("misplaced operator: " + op);
 				}
-				long num = 1;
+				BigInteger num = 1;
 				// if there's an expression after the minus sign, just process it and negate it
 				if (steve.TryReadLong (ref num) || Char.ToLower (steve.Peek ()) == 'd' || steve.Peek() == '(' || steve.Peek() == '[') {
 					output.Add (new NumToken(-num));
@@ -425,7 +445,7 @@ namespace Rollify.Core
 		}
 
 		// TODO redesign keep strategy to allow keeping both highest and lowest
-		private static long roll(long dieType, long dieCount, long keepCount, KeepStrategy keepStrategy) {
+		private static BigInteger roll(BigInteger dieType, long dieCount, long keepCount, KeepStrategy keepStrategy) {
 
 			if (dieType <= 1) {
 				throw new InvalidExpressionException ("invalid die");
@@ -439,20 +459,20 @@ namespace Rollify.Core
 				dieCount = -dieCount;
 			}
 
-			keepCount = Math.Min (keepCount, dieCount);
+			keepCount = Math.Min(keepCount, dieCount);
 
 			// roll the dice and keep them in an array
-			long[] results = new long[dieCount];
-			for (long i = 0; i < dieCount; i++) {
-				byte[] buf = new byte[8]; // Random has no long return type, so we have to make our own
-				RAND.NextBytes(buf);
-				results[i] = Math.Abs(BitConverter.ToInt64(buf, 0) % dieType) + 1;
+			BigInteger[] results = new BigInteger[dieCount];
+			for (int i = 0; i < dieCount; i++) {
+				BigInteger num = new BigInteger ();
+				num.genRandomBits (dieType.bitCount (), RAND);
+				results [i] = num;
 			}
 
 			// add up the results based on the strategy used
-			long result = 0;
+			BigInteger result = 0;
 			if (keepStrategy == KeepStrategy.ALL) {
-				for (long i = 0; i < dieCount; i++) {
+				for (int i = 0; i < dieCount; i++) {
 					result += results [i];
 				}
 			} else { // we are only keeping some, so sort the list
@@ -462,7 +482,7 @@ namespace Rollify.Core
 						result += results [i];
 					}
 				} else if (keepStrategy == KeepStrategy.LOWEST) {
-					for (long i = 0; i < keepCount; i++) {
+					for (int i = 0; i < keepCount; i++) {
 						result += results [i];
 					}
 				}
@@ -473,9 +493,9 @@ namespace Rollify.Core
 			return result;
 		}
 
-		private void AssertNonSelfReferentialFormula(string formulaName) {
-			if (formulaNest.Contains (formulaName)) {
-				throw new InvalidExpressionException ("[" + formulaName + "] is self-referential");
+		private void Assert(bool condition, string errString) {
+			if (!condition) {
+				throw new InvalidExpressionException (errString);
 			}
 		}
 
