@@ -43,9 +43,15 @@
       <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Rollify.Core\Rollify.Core.csproj">
+      <Project>{281D3965-AD73-426C-AFC5-C3E49723B27C}</Project>
+      <Name>Rollify.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tests.cs" />
+    <Compile Include="CoreTests.cs" />
+    <Compile Include="SQLite.Implementation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
